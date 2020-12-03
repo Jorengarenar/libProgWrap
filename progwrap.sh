@@ -1,4 +1,4 @@
-progwrap() {
+progwrap_exec() {
     bs="$(basename "$0" | sed 's/-/_/')"
     execChainEnvVar=execution_chain_$bs
 
