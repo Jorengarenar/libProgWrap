@@ -6,7 +6,7 @@ BUILD    := build
 OBJDIR   := $(BUILD)/obj
 SRCDIR   := .
 
-LIBNAME     := wrapper_exec
+LIBNAME     := ProgWrap
 LIBFILENAME := lib$(LIBNAME).a
 
 ifndef INCLUDEDIR
