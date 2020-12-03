@@ -1,4 +1,4 @@
-#include "wrapper_exec.h"
+#include "progwrap.h"
 
 #include <errno.h>
 #include <libgen.h>

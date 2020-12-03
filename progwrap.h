@@ -1,5 +1,5 @@
-#ifndef WRAPPER_EXEC_H_
-#define WRAPPER_EXEC_H_
+#ifndef LIBPROGWRAP_H_
+#define LIBPROGWRAP_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,4 +15,4 @@ char* findRealBin(char* bin);
 } // extern "C"
 #endif
 
-#endif
+#endif // LIBPROGWRAP_H_
