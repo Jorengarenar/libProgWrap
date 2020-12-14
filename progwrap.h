@@ -16,9 +16,9 @@ extern "C" {
 #include <sys/types.h>
 #include <unistd.h>
 
-char execChainEnvVar[150];
+extern char** environ;
 
-int appendExecChain(ino_t I)
+static int appendExecChain(execChainEnvVar, ino_t I)
 {
     char inoStr[100];
     snprintf(inoStr, 100, "%zu", I);
@@ -38,7 +38,7 @@ int appendExecChain(ino_t I)
     return 0;
 }
 
-char* getCurrentBin(char* cur)
+static char* getCurrentBin(char* cur)
 {
     char* proc_self = "/proc/self/exe";
     if (readlink(proc_self, cur, PATH_MAX) < 0) {
@@ -47,7 +47,7 @@ char* getCurrentBin(char* cur)
     return cur;
 }
 
-char* findRealBin(char* bin)
+static char* findExecutable(char* bin)
 {
     errno = 0;
 
@@ -62,7 +62,9 @@ char* findRealBin(char* bin)
     ino_t curInode = fb.st_ino;
 
     char* bs = basename(cur);
-    snprintf(execChainEnvVar, 100, "%s%s", "execution_chain_", bs);
+
+    char execChainEnvVar[150];
+    snprintf(execChainEnvVar, 150, "%s%s", "execution_chain_", bs);
 
     char buf[PATH_MAX];
     char PATH[BUFSIZ];
@@ -77,7 +79,7 @@ char* findRealBin(char* bin)
         ino_t ino = fb.st_ino;
 
         if (ino != curInode && fb.st_mode & S_IXUSR) {
-            if (appendExecChain(ino) == 0) {
+            if (appendExecChain(execChainEnvVar, ino) == 0) {
                 strncpy(bin, buf, PATH_MAX);
                 return bin;
             }
@@ -86,6 +88,22 @@ char* findRealBin(char* bin)
 
     errno = ENOENT;
     return NULL;
+}
+
+int progwrap_exec(char* args[])
+{
+    errno = 0;
+    char original[PATH_MAX];
+    if (findExecutable(original) == NULL) {
+        errno = ENOENT;
+        return -1;
+    }
+
+    int r = execve(original, args, environ);
+
+    if (r < 0) {
+        return r;
+    }
 }
 
 #ifdef __cplusplus
