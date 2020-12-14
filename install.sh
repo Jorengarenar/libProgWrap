@@ -9,13 +9,15 @@ LIBDIR="${LIBDIR:-${XDG_LIB_DIR:-$HOME/.local/lib}}"
 
 libname="progwrap"
 
+[ -z "$NO_C_SUBDIR" ] && C_SUBDIR="c"
+
 c=$libname.h
 shell=$libname.sh
 
 if [ "$1" != "--uninstall" ]; then
-    install $c     $INCLUDEDIR/c
+    install $c     $INCLUDEDIR/$C_SUBDIR
     install $shell $LIBDIR/shell
 else
-	rm $INCLUDEDIR/c/$c
+	rm $INCLUDEDIR/$C_SUBDIR/$c
     rm $LIBDIR/shell/$shell
 fi
