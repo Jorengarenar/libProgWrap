@@ -7,13 +7,13 @@ install() {
 while getopts "lu": OPTION; do
     case $OPTION in
         l) only=$OPTARG ;;
-        s) uninstall=1 ;;
+        s) uninstall=1  ;;
     esac
 done
 
 shift $(($OPTIND - 1))
 
-if [ -n "$only" ]
+if [ -n "$only" ]; then
     if [ -z "$INCLUDEDIR" -o -z "$LIBDIR" ]; then
         echo "INCLUDEDIR or LIBDIR was not specified"
         echo "To install only for one language, you need to specify both locations"
