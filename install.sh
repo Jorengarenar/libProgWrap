@@ -34,15 +34,15 @@ if [ -z "$uninstall" ]; then
         install $c     $INCLUDEDIR/c
         install $shell $LIBDIR/shell
     else
-        [ "$only" = "c" ]     && install $c     $INCLUDEDIR
-        [ "$only" = "shell" ] && install $shell $LIBDIR
+        [ "$only" = "c" ]     && install $c     $INCLUDEDIR || true
+        [ "$only" = "shell" ] && install $shell $LIBDIR     || true
     fi
 else
     if [ -z "$only" ]; then
         rm $INCLUDEDIR/c/$c
         rm $LIBDIR/shell/$shell
     else
-        [ "$only" = "c" ]     && rm $INCLUDEDIR/$c
-        [ "$only" = "shell" ] && rm $LIBDIR/$shell
+        [ "$only" = "c" ]     && rm $INCLUDEDIR/$c || true
+        [ "$only" = "shell" ] && rm $LIBDIR/$shell || true
     fi
 fi
