@@ -18,7 +18,7 @@ extern "C" {
 
 extern char** environ;
 
-static int appendExecChain(execChainEnvVar, ino_t I)
+static int appendExecChain(char* execChainEnvVar, ino_t I)
 {
     char inoStr[100];
     snprintf(inoStr, 100, "%zu", I);
@@ -99,11 +99,7 @@ int progwrap_exec(char* args[])
         return -1;
     }
 
-    int r = execve(original, args, environ);
-
-    if (r < 0) {
-        return r;
-    }
+    return execve(original, args, environ);
 }
 
 #ifdef __cplusplus
