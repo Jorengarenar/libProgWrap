@@ -4,10 +4,10 @@ install() {
     command install -D -m 0644 -t "$2" "$1"
 }
 
-while getopts "lu": OPTION; do
-    case $OPTION in
-        l) only=$OPTARG ;;
-        s) uninstall=1  ;;
+while getopts l:u option; do
+    case $option in
+        l) only="$OPTARG" ;;
+        u) uninstall=1    ;;
     esac
 done
 
