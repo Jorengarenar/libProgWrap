@@ -40,35 +40,41 @@ static int appendExecChain(char* execChainEnvVar, ino_t I)
 
 static char* getCurrentBin(char* cur)
 {
-    char* proc_self = "/proc/self/exe";
+    const char* proc_self = "/proc/self/exe";
     if (readlink(proc_self, cur, PATH_MAX) < 0) {
         return NULL;
     }
     return cur;
 }
 
-static char* findExecutable(char* bin)
+static char* findExecutable(char* args[], char* bin)
 {
     errno = 0;
+    struct stat fb;
 
     char cur[PATH_MAX];
     if (getCurrentBin(cur) == NULL) {
         return NULL;
     }
 
-    struct stat fb;
+    stat(args[0], &fb);
+    ino_t fooInode = fb.st_ino;
 
     stat(cur, &fb);
     ino_t curInode = fb.st_ino;
 
-    char* bs = basename(cur);
+    char* bs = basename(args[0]);
 
     char execChainEnvVar[150];
     snprintf(execChainEnvVar, 150, "%s%s", "execution_chain_", bs);
 
+    if (curInode != fooInode) {
+        appendExecChain(execChainEnvVar, fooInode);
+    }
+
     char buf[PATH_MAX];
     char PATH[BUFSIZ];
-    strncpy(PATH, getenv("PATH"), BUFSIZ);
+    strncpy(PATH, getenv("PATH"), BUFSIZ-1);
     char* dir = strtok(PATH, ":");
 
     do {
@@ -93,13 +99,12 @@ static char* findExecutable(char* bin)
 int progwrap_exec(char* args[])
 {
     errno = 0;
-    char original[PATH_MAX];
-    if (findExecutable(original) == NULL) {
-        errno = ENOENT;
+    char bin[PATH_MAX];
+    if (findExecutable(args, bin) == NULL) {
         return -1;
     }
 
-    return execve(original, args, environ);
+    return execve(bin, args, environ);
 }
 
 #ifdef __cplusplus
